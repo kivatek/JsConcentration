@@ -8,7 +8,7 @@ const PHASE_WAIT = 1;
 var Card = Class.create(Sprite, {
 	initialize: function(c, n){
 		Sprite.call(this, 62, 80);
-		this.id = c * MAX_NUMBER + n;
+		this.cardid = c * MAX_NUMBER + n;
 		this.image = game.assets['img/cards.png'];
 		this.hide();
 		this.addEventListener('touchstart', function(){
@@ -16,13 +16,12 @@ var Card = Class.create(Sprite, {
 				return;
 			}
 			if(this.opened == false){
-				this.frame = this.id;
-				this.opened = true;
+				this.showFace();
 				if(prevCard != null){
 					phase = PHASE_WAIT;
 					var card = this;
 					setTimeout( function(){
-						if(Math.floor(card.id % MAX_NUMBER) == Math.floor(prevCard.id % MAX_NUMBER)){
+						if(Math.floor(card.cardid % MAX_NUMBER) == Math.floor(prevCard.cardid % MAX_NUMBER)){
 							card.hide();
 							prevCard.hide();
 							removed += 2;
@@ -42,12 +41,17 @@ var Card = Class.create(Sprite, {
 	},
 	hide: function(){
 		this.frame = 104;
-		this.x = -62;
-		this.y = -80;
+		this.visible = false;
 		this.opened = false;
+	},
+	showFace: function(){
+		this.frame = this.cardid;
+		this.visible = true;
+		this.opened = true;
 	},
 	showBack: function(){
 		this.frame = 104;
+		this.visible = true;
 		this.opened = false;
 	}
 });
@@ -103,9 +107,9 @@ function putCards(){
 	var i;
 	for(i = 0; i < board.length; i++){
 		var card = board[i];
-		card.frame = 104;
 		card.x = Math.floor(i % 4) * 66 + 40;
 		card.y = Math.floor(i / 4) * 84 + 12;
+		card.showBack();
 	}
 	removed = 0;
 }
